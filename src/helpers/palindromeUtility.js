@@ -23,8 +23,11 @@ export const getNextPalindrome = (date) => {
     }
   }
   let day = days === 1 ? `1 day` : `${days} days`
+  const formatFinal = (date) =>
+    new Date(date).toISOString().slice(0, 10).split('-').reverse().join('-')
+
   return {
-    nextDate: `Next  palindrome date: ${nextDate}`,
+    nextDate: `Next  palindrome date: ${formatFinal(nextDate)}`,
     days: `You just missed by ` + day,
   }
 }
