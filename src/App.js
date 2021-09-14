@@ -1,48 +1,112 @@
 import React, { useState } from 'react'
 
 function App() {
-  const [birthday, setBirthday] = useState(new Date())
-  const [luckyNumber, setLuckyNumber] = useState('')
+  const [birthday, setBirthday] = useState('')
+  const [nextPalindrome, setNextPalindrome] = useState('')
+  const [success, setSuccess] = useState(true)
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  /**
-   *
-   * @param {date string (DD-MM-YYYY )} birthday
-   * @returns date string without any separators (DDMMYYYY)
-   */
-  const birthDateConvert = (birthday) => {
-    console.log(birthday)
-    return {
-      normalDate: birthday.split('-').join(''),
-      reversedDate: birthday.split('-').reverse().join(''),
-    }
+  //******** Get Date variations ******/
+  const dateVariations = (formattedDate) => {
+    // Date variations
+    // DD-MM-YYYY, MM-DD-YYYY, YYYY-MM-DD, DD-MM-YY, MM-DD-YY, YY-MM-DD
+    /*
+    01012021
+
+    */
+    const joinArray = (arr) => arr.join('')
+
+    const [yyyy, mm, dd] = formattedDate.split('-')
+
+    const dateVariations = [
+      [dd, mm, yyyy],
+      [mm, dd, yyyy],
+      [yyyy, mm, dd],
+      [dd, mm, yyyy.slice(-2)],
+      [mm, dd, yyyy.slice(-2)],
+      [yyyy.slice(-2), mm, dd],
+    ].map((arr) => joinArray(arr))
+
+    return dateVariations
   }
 
-  /**
-   *
-   * @param {date string } date
-   * @returns date with iso string len = 10
-   */
   const formatDate = (date) => date.toISOString().slice(0, 10)
 
-  const todaysDate = formatDate(new Date())
+  const addDelay = (message, date) =>
+    setTimeout(() => {
+      // Stop loader
+      setLoading(false)
+      setMessage(message)
+      const upcomingPalindrome = getNextPalindrome(date)
+      setNextPalindrome(upcomingPalindrome)
+    }, 3000)
 
-  /**
-   * returns palindrome message
-   */
+  //******* Get next date ******/
+  const getNextDate = (date) => {
+    const tomorrow = new Date(date)
+    const next = tomorrow.setDate(tomorrow.getDate() + 1)
+    return formatDate(new Date(next))
+  }
+
+  //******** Get next palindrome date and the gap in between ******/
+  const getNextPalindrome = (date) => {
+    let nextDate = getNextDate(date)
+    let days = 0
+    while (1) {
+      // Increase day count after each iteration
+      days++
+
+      // Get Date variations for next date
+      let currentDateVariations = dateVariations(nextDate)
+
+      // Check if the the date is palindrome in one of the date variations
+      let palindromeFound = currentDateVariations
+        .map((date) => isPalindrome(date))
+        .some((val) => val === true)
+
+      if (palindromeFound) {
+        console.log(nextDate)
+        break
+      } else {
+        nextDate = getNextDate(nextDate)
+      }
+    }
+    return { nextDate, days }
+  }
+
+  const isPalindrome = (bDate) => bDate === bDate.split('').reverse().join('')
+
   const checkIfPalindrome = () => {
     // If the birth date is today's date then format the date or else keep the date as is
     const finalDate = birthday instanceof Date ? formatDate(birthday) : birthday
 
-    // Pass date which is in the DD-MM-YYYY format and
-    const { normalDate, reversedDate } = birthDateConvert(finalDate)
+    // Get dateVariations for the current date
+    const currentDateVariations = dateVariations(finalDate)
 
-    console.log(normalDate)
-    console.log(reversedDate)
+    //**** Check if any of the date variation is palindrome
+    const res = currentDateVariations
+      .map((date) => isPalindrome(date))
+      .some((val) => val === true)
+
+    //****** Loader Logic *******
+    // Start Loader
+    setMessage('Processing...')
+    setLoading(true)
+
+    // Stop loader after 3 seconds
+
+    //****** Set output *******/
     // Set palindrome or not
-    normalDate === reversedDate
-      ? setMessage('Hurray your birthday is a palindrome 😄')
-      : setMessage('Sorry your birthday is not a palindrome 😢')
+    if (res) {
+      setSuccess(true)
+      addDelay('Hurray your birthday is a palindrome 😄', finalDate)
+    } else {
+      addDelay('Sorry your birthday is not a palindrome 😢', finalDate)
+    }
+    // res
+    //   ? addDelay('Hurray your birthday is a palindrome 😄')
+    //   : addDelay('Sorry your birthday is not a palindrome 😢', finalDate)
   }
 
   return (
@@ -52,7 +116,7 @@ function App() {
       <p>Enter your birth date:</p>
       <input
         min="1950-01-01"
-        max={todaysDate}
+        // max={todaysDate}
         type="date"
         value={birthday}
         className="datePickerStyle"
@@ -66,7 +130,16 @@ function App() {
         </button>
       )}
       <br />
-      <p>{message}</p>
+      <br />
+      <div className="loadingContainer">
+        <div className={`${loading ? 'loader' : ''}`}></div>
+        <h2>{message}</h2>
+        <h2>
+          {!success
+            ? `Next palindrome birthday is  ${nextPalindrome.nextDate}, you just missed it by ${nextPalindrome.days} days 😞`
+            : ''}
+        </h2>
+      </div>
     </div>
   )
 }
