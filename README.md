@@ -1,5 +1,5 @@
-# Lucky birthday checker
+# Palindrome birthday checker
 
-Mark 12
+Mark 13
 
 [Live Site]()
