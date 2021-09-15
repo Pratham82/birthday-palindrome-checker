@@ -75,8 +75,8 @@ function App() {
       <br />
       <br />
       {birthday && (
-        <button className="checkIfLuckyBtn" onClick={checkIfPalindrome}>
-          Check Number
+        <button className="checkIfPalindrome" onClick={checkIfPalindrome}>
+          Check If Palindrome
         </button>
       )}
       <br />
