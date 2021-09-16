@@ -11,10 +11,10 @@ const footerStyles = {
   padding: '1rem',
   /* background-color: rgb(235, 195, 64); */
   textAlign: 'center',
-  position: 'fixed',
+  // position: 'fixed',
   bottom: '0',
   left: '0',
-  width: '100%',
+  width: '96%',
 }
 
 const CommonLink = ({ link, title, icon }) => (
