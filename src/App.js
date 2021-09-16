@@ -61,7 +61,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>🍰 Palindrome birthday 🎂</h1>
+      <h2>🍰 Palindrome birthday 🎂</h2>
       <div className="container"></div>
       <p>Enter your birth date:</p>
       <input
